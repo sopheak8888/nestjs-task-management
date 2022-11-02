@@ -1,0 +1,14 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:14
+    restart: "no"
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: postgres
+      POSTGRES_DB: task-management
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql
