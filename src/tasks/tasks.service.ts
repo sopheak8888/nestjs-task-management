@@ -5,15 +5,22 @@ import { Task } from "./task.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { FilterTaskDto } from './dto/filter-task.dto';
+import { User } from 'src/auth/user.entity';
 @Injectable()
 export class TasksService {
     constructor(
         @InjectRepository(Task) private taskRepository: Repository<Task>
     ) {}
 
-    async getTaskById(id: number): Promise<Task> {
+    async getTaskById(
+        id: number,
+        user: User
+    ): Promise<Task> {
         const found =  await this.taskRepository.findOne({
-            where: {id: id},
+            where : {
+                id,
+                userId: user.id
+            },
             select: ['id', 'title', 'description', 'status']
         });
         if (!found) {
@@ -22,19 +29,27 @@ export class TasksService {
         return found;
     }
 
-    async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    async createTask(
+        createTaskDto: CreateTaskDto,
+        user: User
+    ): Promise<Task> {
         const { title, description } = createTaskDto;
         const task: Task = this.taskRepository.create({
             title,
             description,
-            status: TaskStatus.OPEN
+            status: TaskStatus.OPEN,
+            user
         });
         await this.taskRepository.save(task);
+        delete task.user;
         return task;
     }
 
-    async deleteTaskById(id: number): Promise<void> {
-        const found = await this.getTaskById(id);
+    async deleteTaskById(
+        id: number,
+        user: User    
+    ): Promise<void> {
+        const found = await this.getTaskById(id, user);
         if (!found) {
             throw new Error('Task not found');
         }
@@ -43,8 +58,12 @@ export class TasksService {
         });
     }
 
-    async updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
-        let task = await this.getTaskById(id);
+    async updateTaskStatus(
+        id: number,
+        user: User,
+        status: TaskStatus
+    ): Promise<Task> {
+        let task = await this.getTaskById(id, user);
         await this.taskRepository.update({
             id: id
         }, {
@@ -54,9 +73,13 @@ export class TasksService {
         return task;
     }
 
-    async getTasks(filterDto: FilterTaskDto): Promise<Task[]>{
+    async getTasks(
+        filterDto: FilterTaskDto,
+        user: User
+    ): Promise<Task[]>{
         const { status, search } = filterDto;
         let tasks = this.taskRepository.createQueryBuilder('task');
+        tasks.where('task.userId = :userId', { userId: user.id });
         if (status) {
             tasks.andWhere('task.status = :status', { status });
         }
