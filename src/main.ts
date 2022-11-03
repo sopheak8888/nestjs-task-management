@@ -8,8 +8,8 @@ async function bootstrap() {
   if(process.env.NODE_ENV === 'development') {
     app.enableCors();
   }else{
-    app.enableCors({origin: 'earlypublisher.site'});
-    logger.log(`Accepting requests from origin "earlypublisher.site"`);
+    app.enableCors({origin: 'https://earlypublisher.site'});
+    logger.log(`Accepting requests from origin "https://earlypublisher.site"`);
   }
   await app.listen(process.env.PORT || 3000);
 }
