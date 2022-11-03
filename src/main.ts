@@ -7,7 +7,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   if(process.env.NODE_ENV === 'development') {
     app.enableCors();
-  } 
+  }else{
+    app.enableCors({origin: 'https://nestjs-task-management-production.up.railway.app/'});
+    logger.log(`Accepting requests from origin "https://nestjs-task-management-production.up.railway.app"`);
+  }
   const port = 3000;
   await app.listen(port);
   logger.log(`Application listening on port ${port}`);
