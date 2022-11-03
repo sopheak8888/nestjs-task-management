@@ -11,8 +11,6 @@ async function bootstrap() {
     app.enableCors({origin: 'earlypublisher.site'});
     logger.log(`Accepting requests from origin "earlypublisher.site"`);
   }
-  const port = 3000;
-  await app.listen(port);
-  logger.log(`Application listening on port ${port}`);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
