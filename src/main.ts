@@ -8,8 +8,8 @@ async function bootstrap() {
   if(process.env.NODE_ENV === 'development') {
     app.enableCors();
   }else{
-    app.enableCors({origin: 'earlypublisher.site'});
-    logger.log(`Accepting requests from origin "earlypublisher.site"`);
+    app.enableCors({origin: 'https://nestjs-task-management-production.up.railway.app'});
+    logger.log(`Accepting requests from origin "https://nestjs-task-management-production.up.railway.app"`);
   }
   await app.listen(process.env.PORT || 3000);
 }
